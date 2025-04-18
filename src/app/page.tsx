@@ -13,16 +13,16 @@ interface Blob {
 }
 
 const BlobAura = () => {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [blobs, setBlobs] = useState<Blob[]>([]);
-  const [isHoveringClickable, setIsHoveringClickable] = useState(false);
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<number | null>(null); // Use null as the initial value
+  const [isHoveringClickable, setIsHoveringClickable] = useState<boolean>(false);
+  const cursorRef = useRef<HTMLDivElement | null>(null);
+  const animationRef = useRef<number | null>(null);
   const lastTimeRef = useRef<number>(0);
 
   useEffect(() => {
     const initialBlobs: Blob[] = [];
-    
+
     for (let i = 0; i < 12; i++) {
       const baseSize = 200 + Math.random() * 150;
       initialBlobs.push({
@@ -31,7 +31,7 @@ const BlobAura = () => {
         y: Math.random() * window.innerHeight,
         size: baseSize,
         baseSize,
-        vx: (Math.random() - 0.5) * 8, // FASTER SPEED
+        vx: (Math.random() - 0.5) * 8,
         vy: (Math.random() - 0.5) * 8
       });
     }
@@ -44,14 +44,14 @@ const BlobAura = () => {
       setMousePos({ x: clientX, y: clientY });
 
       const element = document.elementFromPoint(clientX, clientY);
-      
-      // Ensure that the value passed to setIsHoveringClickable is always a boolean
       setIsHoveringClickable(
-        element ? (element.tagName === "A" || element.tagName === "BUTTON" || element.hasAttribute("onClick")) : false
+        element
+          ? element.tagName === "A" || element.tagName === "BUTTON" || element.hasAttribute("onClick")
+          : false
       );
 
       if (cursorRef.current) {
-        cursorRef.current.style.transform = `translate(${clientX}px, ${clientY}px)`; // Corrected line
+        cursorRef.current.style.transform = `translate(${clientX}px, ${clientY}px)`;
       }
     };
 
@@ -65,14 +65,14 @@ const BlobAura = () => {
       const deltaTime = time - lastTimeRef.current;
       lastTimeRef.current = time;
 
-      setBlobs(prevBlobs =>
-        prevBlobs.map(blob => {
-          let { x, y, vx, vy, baseSize, size } = blob;
+      setBlobs((prevBlobs) =>
+        prevBlobs.map((blob) => {
+          let { x, y, vx, vy } = blob;
+          const size = blob.baseSize;
 
           x += vx * (deltaTime / 16);
           y += vy * (deltaTime / 16);
 
-          // Bounce off edges and keep inside window
           const radius = size / 2;
           if (x - radius <= 0 || x + radius >= window.innerWidth) {
             vx *= -1;
@@ -83,14 +83,13 @@ const BlobAura = () => {
             y = Math.max(radius, Math.min(window.innerHeight - radius, y));
           }
 
-          // Mouse interaction
           const dx = mousePos.x - x;
           const dy = mousePos.y - y;
           const distance = Math.sqrt(dx * dx + dy * dy);
           const interactionRadius = 350;
 
           if (distance < interactionRadius) {
-            const force = (interactionRadius - distance) / interactionRadius * 0.7;
+            const force = ((interactionRadius - distance) / interactionRadius) * 0.7;
             const angle = Math.atan2(dy, dx);
             const multiplier = isHoveringClickable ? -1.2 : 0.8;
 
@@ -98,7 +97,6 @@ const BlobAura = () => {
             vy += Math.sin(angle) * force * multiplier;
           }
 
-          // Limit speed
           vx *= 0.995;
           vy *= 0.995;
 
@@ -109,7 +107,7 @@ const BlobAura = () => {
             vy = (vy / speed) * maxSpeed;
           }
 
-          return { ...blob, x, y, vx, vy, size: baseSize };
+          return { ...blob, x, y, vx, vy, size };
         })
       );
 
@@ -126,7 +124,7 @@ const BlobAura = () => {
     if (isHoveringClickable) return;
 
     const baseSize = 200 + Math.random() * 150;
-    setBlobs(prev => [
+    setBlobs((prev) => [
       ...prev,
       {
         id: Date.now(),
@@ -146,7 +144,7 @@ const BlobAura = () => {
         ref={cursorRef}
         className={`${styles.cursorCore} ${isHoveringClickable ? styles.cursorActive : ""}`}
       />
-      {blobs.map(blob => (
+      {blobs.map((blob) => (
         <div
           key={blob.id}
           className={styles.giantCircle}
@@ -155,7 +153,7 @@ const BlobAura = () => {
             top: blob.y,
             width: blob.size,
             height: blob.size,
-            transform: `translate(-50%, -50%)`, // Corrected line
+            transform: "translate(-50%, -50%)",
             opacity: 0.6
           }}
         />

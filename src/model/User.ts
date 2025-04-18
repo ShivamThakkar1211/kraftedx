@@ -1,12 +1,11 @@
-import mongoose, { Schema, Document, Types } from 'mongoose';
-
+import mongoose, { Schema, Document } from 'mongoose';
 
 export interface User extends Document {
   username: string;
   email: string;
   password?: string; // Optional for social logins
-  verifyCode?: string; // Optional for social logins
-  verifyCodeExpiry?: Date | null; // Allow null for social logins
+  verifyCode?: string;
+  verifyCodeExpiry?: Date | null;
   isVerified: boolean;
 }
 
@@ -25,35 +24,28 @@ const UserSchema: Schema<User> = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: function () {
-      // Password is required only for non-social logins
-      return !this.isVerified;
+    required: function (this: User) {
+      return !this.isVerified; // Password is only required if not verified (non-social)
     },
   },
   verifyCode: {
     type: String,
-    required: function () {
-      // Verify code is required only for email verification
-      return !this.isVerified;
+    required: function (this: User) {
+      return !this.isVerified; // Only needed if not verified
     },
   },
   verifyCodeExpiry: {
     type: Date,
-    required: function () {
-      // Verify code expiry is required only for email verification
-      return !this.isVerified;
-    },
     default: null,
   },
   isVerified: {
     type: Boolean,
     default: false,
-  }
+  },
 });
 
-// Create the model if it doesn't already exist
+// Check if model already exists to prevent overwrite issues during hot reloads
 const UserModel =
-  (mongoose.models.User as mongoose.Model<User>) ||
-  mongoose.model<User>('User', UserSchema);
+  mongoose.models.User as mongoose.Model<User> || mongoose.model<User>('User', UserSchema);
 
 export default UserModel;
