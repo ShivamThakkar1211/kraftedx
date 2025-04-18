@@ -1,0 +1,91 @@
+.navbar {
+    padding: 1rem;
+    backdrop-filter: blur(20px);
+    color: white;
+    width: 100%;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    position: sticky;
+    top: 0;
+    transition: all 0.3s ease-in-out;
+    z-index: 1;
+  }
+  
+  .navbarContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 60px;
+  }
+  
+  @media (min-width: 768px) {
+    .navbarContainer {
+      flex-direction: row;
+    }
+  }
+  
+  .brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    text-decoration: none;
+    color: white;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .brand:hover {
+    transform: scale(1.05);
+  }
+  
+  @media (min-width: 768px) {
+    .brand {
+      margin-bottom: 0;
+    }
+  }
+  
+  .welcomeText {
+    margin-right: 1rem;
+    font-size: 1rem;
+    color: #f8fafc;
+  }
+  
+  .navButton {
+    position: relative;
+    overflow: hidden;
+    background: transparent;
+    color: white;
+    padding: 0.5rem 1.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 500;
+    backdrop-filter: blur(4px);
+    transition: color 0.4s ease-in-out, border-color 0.4s ease-in-out;
+    z-index: 1;
+  }
+  
+  .navButton::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 0;
+    background: rgba(255, 255, 255, 0.7);
+    z-index: -1;
+    transition: height 0.3s ease;
+  }
+  
+  .navButton:hover::before {
+    height: 100%;
+  }
+  
+  .navButton:hover {
+    color: #111827; /* dark gray text on hover */
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+  
+  
