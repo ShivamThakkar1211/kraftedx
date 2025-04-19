@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
 import React from 'react';
 import Link from 'next/link';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession, signIn, signOut } from 'next-auth/react';
 import styles from './nav.module.css';
 
 function Navbar() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const user = session?.user;
 
   return (
@@ -15,19 +15,28 @@ function Navbar() {
         <a href="/" className={styles.brand}>
           Shivam Thakkar
         </a>
-        {session ? (
+
+        {status === 'loading' ? (
+          <span className={styles.welcomeText}>Loading...</span>
+        ) : session ? (
           <>
             <span className={styles.welcomeText}>
               Welcome, {user.username || user.email}
             </span>
+
+            {/* ✅ Dashboard button visible only if logged in */}
+            <Link href="/dashboard">
+              <button className={styles.navButton}>Dashboard</button>
+            </Link>
+
             <button onClick={() => signOut()} className={styles.navButton}>
               Logout
             </button>
           </>
         ) : (
-          <Link href="/sign-in" className={styles.linkWrapper}>
-            <button className={styles.navButton}>Login</button>
-          </Link>
+          <button onClick={() => signIn('google')} className={styles.navButton}>
+            Sign in with Google
+          </button>
         )}
       </div>
     </nav>

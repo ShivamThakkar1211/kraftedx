@@ -1,0 +1,46 @@
+.hollowText {
+    font-size: 4rem;
+    font-weight: bold;
+    color: transparent;
+    -webkit-text-stroke: 1px #3498db;
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    background-image: linear-gradient(90deg, #3498db, #e74c3c, #f1c40f, #2ecc71);
+    background-size: 200%;
+    background-repeat: no-repeat;
+    background-position: 0% 50%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    transition: background-position 0.3s ease;
+  }
+  
+  .hollowText::before {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: transparent;
+    -webkit-text-stroke: 0;
+    background: inherit;
+    background-clip: text;
+    -webkit-background-clip: text;
+  }
+  
+  .hollowText:hover {
+    animation: hoverMove 1s ease forwards;
+  }
+
+  .link{
+    cursor: pointer;
+  }
+  
+  @keyframes hoverMove {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 100% 50%;
+    }
+  }
+  

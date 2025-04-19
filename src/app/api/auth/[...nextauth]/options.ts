@@ -1,77 +1,10 @@
 import { NextAuthOptions } from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import GitHubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
-import bcrypt from 'bcryptjs';
 import dbConnect from '@/lib/dbConnect';
 import UserModel from '@/model/User';
 
 export const authOptions: NextAuthOptions = {
   providers: [
-    CredentialsProvider({
-      id: 'credentials',
-      name: 'Credentials',
-      credentials: {
-        identifier: { label: 'Email or Username', type: 'text' },
-        password: { label: 'Password', type: 'password' },
-      },
-      async authorize(credentials: any): Promise<any> {
-        await dbConnect();
-        try {
-          const user = await UserModel.findOne({
-            $or: [
-              { email: credentials.identifier },
-              { username: credentials.identifier },
-            ],
-          });
-
-          if (!user) {
-            throw new Error('No user found with this email or username');
-          }
-
-          if (!user.isVerified) {
-            throw new Error('Please verify your account before logging in');
-          }
-
-          if (!user.password) {
-            throw new Error('User does not have a password set');
-          }
-
-          const isPasswordCorrect = await bcrypt.compare(
-            credentials.password,
-            user.password
-          );
-
-          if (!isPasswordCorrect) {
-            throw new Error('Incorrect password');
-          }
-
-          return {
-            _id: user._id?.toString(),
-            email: user.email,
-            username: user.username,
-            isVerified: user.isVerified,
-          };
-        } catch (err: any) {
-          console.error('Authorize error:', err.message);
-          throw new Error('Authentication failed');
-        }
-      },
-    }),
-
-    GitHubProvider({
-      clientId: process.env.GITHUB_CLIENT_ID || '',
-      clientSecret: process.env.GITHUB_CLIENT_SECRET || '',
-      profile(profile) {
-        return {
-          id: profile.id,
-          name: profile.name || profile.login,
-          email: profile.email || `${profile.login}@github.com`,
-          image: profile.avatar_url,
-        };
-      },
-    }),
-
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || '',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
@@ -88,17 +21,13 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async signIn({ user, account }: { user: any; account: any }) {
-      if (account.provider === 'github' || account.provider === 'google') {
+      if (account.provider === 'google') {
         await dbConnect();
         try {
           let existingUser = await UserModel.findOne({ email: user.email });
 
           if (!existingUser) {
-            if (account.provider === 'google') {
-              existingUser = await UserModel.findOne({ googleId: user.id });
-            } else if (account.provider === 'github') {
-              existingUser = await UserModel.findOne({ githubId: user.id });
-            }
+            existingUser = await UserModel.findOne({ googleId: user.id });
           }
 
           if (!existingUser) {
@@ -113,8 +42,7 @@ export const authOptions: NextAuthOptions = {
               email: user.email,
               username,
               isVerified: true,
-              ...(account.provider === 'google' && { googleId: user.id }),
-              ...(account.provider === 'github' && { githubId: user.id }),
+              googleId: user.id,
             });
             await newUser.save();
 
@@ -131,7 +59,7 @@ export const authOptions: NextAuthOptions = {
 
           return true;
         } catch (err: any) {
-          console.error(`${account.provider} sign-in error:`, err.message);
+          console.error(`Google sign-in error:`, err.message);
           return false;
         }
       }

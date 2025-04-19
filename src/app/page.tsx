@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import styles from "../app/home.module.css";
+import styles from "./home.module.css";
 
 interface Blob {
   id: number;
@@ -158,6 +158,8 @@ const BlobAura = () => {
           }}
         />
       ))}
+       <div className={styles.loginText}>Login to get a personalized dashboard</div>
+      
     </div>
   );
 };
