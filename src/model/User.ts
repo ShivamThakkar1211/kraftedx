@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface User extends Document {
   username: string;
   email: string;
-  password?: string; // Optional for social logins
+  password?: string; 
   verifyCode?: string;
   verifyCodeExpiry?: Date | null;
   isVerified: boolean;
@@ -25,13 +25,13 @@ const UserSchema: Schema<User> = new mongoose.Schema({
   password: {
     type: String,
     required: function (this: User) {
-      return !this.isVerified; // Password is only required if not verified (non-social)
+      return !this.isVerified; 
     },
   },
   verifyCode: {
     type: String,
     required: function (this: User) {
-      return !this.isVerified; // Only needed if not verified
+      return !this.isVerified; 
     },
   },
   verifyCodeExpiry: {
@@ -44,7 +44,7 @@ const UserSchema: Schema<User> = new mongoose.Schema({
   },
 });
 
-// Check if model already exists to prevent overwrite issues during hot reloads
+
 const UserModel =
   mongoose.models.User as mongoose.Model<User> || mongoose.model<User>('User', UserSchema);
 

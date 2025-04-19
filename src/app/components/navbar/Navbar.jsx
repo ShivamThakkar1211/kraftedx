@@ -23,8 +23,6 @@ function Navbar() {
             <span className={styles.welcomeText}>
               Welcome, {user.username || user.email}
             </span>
-
-            {/* ✅ Dashboard button visible only if logged in */}
             <Link href="/dashboard">
               <button className={styles.navButton}>Dashboard</button>
             </Link>

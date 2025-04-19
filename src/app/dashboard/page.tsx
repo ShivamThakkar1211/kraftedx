@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useSession } from 'next-auth/react';
-import styles from './dashboard.module.css'; // Make sure to create a CSS file
+import styles from './dashboard.module.css';
 
 const DashboardPage = () => {
   const { data: session, status } = useSession();
